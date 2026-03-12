@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — RBX KeySystem</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --panel: #0d1117;
+    --panel2: #111820;
+    --border: #1e2d3d;
+    --accent: #00d4ff;
+    --green: #00ff88;
+    --red: #ff3c5a;
+    --yellow: #ffd700;
+    --text: #c9d1d9;
+    --muted: #4a5568;
+    --muted2: #2d3748;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 3px;
+  }
+  .nav-logo span { color: #fff; }
+  nav a {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--red); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+
+  /* ── STATS ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.red::before   { background: var(--red); }
+  .stat-card.yellow::before { background: var(--yellow); }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stat-card.green .stat-value { color: var(--green); }
+  .stat-card.red   .stat-value { color: var(--red); }
+  .stat-card.yellow .stat-value { color: var(--yellow); }
+
+  /* ── CREATE FORM ── */
+  .create-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .create-panel h2 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .form-group input, .form-group select {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 140px;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+  }
+  .form-group select option { background: var(--panel); }
+  .btn {
+    padding: 10px 24px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #33deff; }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); font-size: 12px; padding: 6px 12px; }
+  .btn-danger:hover { background: rgba(255,60,90,0.1); }
+  .btn-warn { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); font-size: 12px; padding: 6px 12px; }
+  .btn-warn:hover { background: rgba(255,215,0,0.1); }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 2px; margin-bottom: 0; }
+  .tab {
+    padding: 10px 24px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--panel); color: #fff; border-top: 2px solid var(--accent); }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--panel2);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 13px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(30,45,61,0.5);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,212,255,0.02); }
+
+  .key-code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .badge-active  { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+  .badge-expired { background: rgba(255,60,90,0.1);  color: var(--red);   border: 1px solid rgba(255,60,90,0.3); }
+  .badge-revoked { background: rgba(74,85,104,0.2);  color: var(--muted); border: 1px solid var(--muted2); }
+
+  .actions { display: flex; gap: 8px; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .empty {
+    padding: 48px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .ip-text { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">RBX<span>-KEYSYSTEM</span> // ADMIN</div>
+  <a href="/logout">⏻ Logout</a>
+</nav>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card green">
+      <div class="stat-label">Active Keys</div>
+      <div class="stat-value">{{ active|length }}</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Expired Keys</div>
+      <div class="stat-value">{{ expired|length }}</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Revoked Keys</div>
+      <div class="stat-value">{{ revoked|length }}</div>
+    </div>
+  </div>
+
+  <!-- Create Key Form -->
+  <div class="create-panel">
+    <h2>+ Generate New Key(s)</h2>
+    <form method="POST" action="/create-key">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Customer / Label</label>
+          <input type="text" name="label" placeholder="e.g. discord_user#1234">
+        </div>
+        <div class="form-group">
+          <label>Duration</label>
+          <select name="days">
+            <option value="7">7 days</option>
+            <option value="14">14 days</option>
+            <option value="30" selected>30 days</option>
+            <option value="60">60 days</option>
+            <option value="90">90 days</option>
+            <option value="365">1 year</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" name="quantity" value="1" min="1" max="50" style="width:80px">
+        </div>
+        <button type="submit" class="btn btn-primary">Generate →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('active', this)">Active ({{ active|length }})</div>
+    <div class="tab" onclick="switchTab('expired', this)">Expired ({{ expired|length }})</div>
+    <div class="tab" onclick="switchTab('revoked', this)">Revoked ({{ revoked|length }})</div>
+  </div>
+
+  <!-- Active Keys -->
+  <div class="tab-content active" id="tab-active">
+    <div class="table-wrap">
+      {% if active %}
+      <table>
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Label</th>
+            <th>Expires</th>
+            <th>Locked IP</th>
+            <th>Last Used</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for k in active %}
+          <tr>
+            <td><span class="key-code">{{ k.key }}</span></td>
+            <td>{{ k.label or '—' }}</td>
+            <td>{{ k.expires_at.strftime('%Y-%m-%d') }}</td>
+            <td><span class="ip-text">{{ k.locked_ip or 'Not locked yet' }}</span></td>
+            <td><span class="ip-text">{{ k.last_used.strftime('%Y-%m-%d %H:%M') if k.last_used else 'Never' }}</span></td>
+            <td>
+              <div class="actions">
+                <form method="POST" action="/revoke-key/{{ k.id }}">
+                  <button type="submit" class="btn btn-danger" onclick="return confirm('Revoke this key?')">Revoke</button>
+                </form>
+                <form method="POST" action="/unlock-ip/{{ k.id }}">
+                  <button type="submit" class="btn btn-warn" title="Unlock IP (allow login from new IP)">Unlock IP</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">// No active keys</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Expired Keys -->
+  <div class="tab-content" id="tab-expired">
+    <div class="table-wrap">
+      {% if expired %}
+      <table>
+        <thead>
+          <tr><th>Key</th><th>Label</th><th>Expired</th><th>Locked IP</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for k in expired %}
+          <tr>
+            <td><span class="key-code" style="opacity:0.5">{{ k.key }}</span></td>
+            <td>{{ k.label or '—' }}</td>
+            <td style="color:var(--red)">{{ k.expires_at.strftime('%Y-%m-%d') }}</td>
+            <td><span class="ip-text">{{ k.locked_ip or '—' }}</span></td>
+            <td>
+              <form method="POST" action="/delete-key/{{ k.id }}">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete?')">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">// No expired keys</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Revoked Keys -->
+  <div class="tab-content" id="tab-revoked">
+    <div class="table-wrap">
+      {% if revoked %}
+      <table>
+        <thead>
+          <tr><th>Key</th><th>Label</th><th>Revoked On</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for k in revoked %}
+          <tr>
+            <td><span class="key-code" style="opacity:0.4">{{ k.key }}</span></td>
+            <td>{{ k.label or '—' }}</td>
+            <td>{{ k.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+              <form method="POST" action="/delete-key/{{ k.id }}">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete?')">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">// No revoked keys</div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
