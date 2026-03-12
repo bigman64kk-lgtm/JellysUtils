@@ -6,11 +6,11 @@ services:
     startCommand: gunicorn app:app
     envVars:
       - key: SECRET_KEY
-        generateValue: true          # Render auto-generates a secure value
+        generateValue: true 
       - key: ADMIN_USERNAME
-        value: admin                 # CHANGE THIS
+        value: admin
       - key: ADMIN_PASSWORD
-        value: changeme123           # CHANGE THIS to something strong
+        value: changeme123
       - key: DATABASE_URL
         fromDatabase:
           name: rbx-keysystem-db
