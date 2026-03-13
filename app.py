@@ -10,8 +10,11 @@ import os
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-in-production-please")
 
-DB_PATH = os.path.join("/data", "keys.db")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
+database_url = os.environ.get("DATABASE_URL", "")
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -185,7 +188,6 @@ def api_verify():
 
 
 with app.app_context():
-    os.makedirs("/data", exist_ok=True)
     db.create_all()
 
 if __name__ == "__main__":
